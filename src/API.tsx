@@ -1,22 +1,67 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { CityType } from "./types/cityType";
+import { CourseType } from "./types/courseType";
+import { EventType } from "./types/eventType";
 import { FormType } from "./types/formType";
 
-const BASE_URL = "http://localhost:3001/api/v1";
+interface MsgType {
+  msg: string;
+}
 
-export const getRequest = async (url: string) => {
+const api = axios.create({
+  baseURL: "http://localhost:3001/api/v1",
+});
+
+export const getRequest = async (
+  url: string
+): Promise<CityType[] | EventType[] | CourseType[] | any> => {
   try {
-    const response = await axios.get(`${BASE_URL}/${url}`);
+    const response = await api.get(`/${url}`);
     return response.data;
   } catch (error) {
-    return error;
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError<MsgType>;
+
+      if (serverError && serverError.response) {
+        return serverError.response.data;
+      }
+    }
+    return { msg: "Something went wrong! " };
   }
 };
 
-export const postRequest = async (url: string, data: FormType | {}) => {
+export const postRequest = async (
+  url: string,
+  data: FormType | {}
+): Promise<AxiosResponse | MsgType> => {
   try {
-    const response = await axios.post(`${BASE_URL}/${url}`, data);
+    const response = await api.post<AxiosResponse>(`/${url}`, data);
     return response;
   } catch (error) {
-    return error;
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError<MsgType>;
+
+      if (serverError && serverError.response) {
+        return serverError.response.data;
+      }
+    }
+    return { msg: "Something went wrong! " };
+  }
+};
+
+export const deleteRequest = async (url: string): Promise<MsgType> => {
+  try {
+    const response = await api.delete(`/${url}`);
+    const msg: { msg: string } = response.data;
+    return msg;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError<MsgType>;
+
+      if (serverError && serverError.response) {
+        return serverError.response.data;
+      }
+    }
+    return { msg: "Something went wrong! " };
   }
 };

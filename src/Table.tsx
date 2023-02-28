@@ -1,18 +1,9 @@
-import { EventType } from "./types/eventType";
-import React, { useEffect, useState } from "react";
-import { getRequest } from "./API";
+import { TablePropsType } from "./types/TablePropsType";
 
-export const Table = () => {
-  const [events, setEvents] = useState<Array<EventType>>([]);
-
-  const getAllEvents = async (url: string) => {
-    const data = await getRequest(url);
-    setEvents(data);
+export const Table = ({ events, deleteEvent }: TablePropsType) => {
+  const deleteHandler = (id: string) => {
+    deleteEvent(id);
   };
-
-  useEffect(() => {
-    getAllEvents("events");
-  }, []);
 
   return (
     <div>
@@ -29,14 +20,15 @@ export const Table = () => {
         </thead>
         <tbody>
           {events.map((event, index) => {
+            const { _id: eventId } = event;
             return (
-              <tr key={event._id}>
+              <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{event.name}</td>
                 <td>{event.city}</td>
                 <td>{event.course}</td>
                 <td>
-                  <button>Usuń</button>
+                  <button onClick={() => deleteHandler(eventId)}>Usuń</button>
                 </td>
               </tr>
             );
