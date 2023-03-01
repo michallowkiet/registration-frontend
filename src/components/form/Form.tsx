@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { getRequest, postRequest } from "../../API";
 import { CityType } from "../../types/cityType";
 import { CourseType } from "../../types/courseType";
-import { FormType } from "../../types/formType";
+import { FormType, FormErrorType } from "../../types/formType";
 import { isEmpty, emptyMsg } from "../../utils/validation";
 import style from "./Form.module.css";
 
@@ -16,8 +16,8 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
   const [cities, setCities] = useState<Array<CityType>>([]);
   const [courses, setCourses] = useState<Array<CourseType>>([]);
   const [formData, setFormData] = useState<FormType>(defaultFormData);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [errors, setErrors] = useState<FormType>({});
+
+  const [formErrors, setFormErrors] = useState<FormErrorType | null>(null);
 
   const inputChangeHandler = (
     event: FormEvent<HTMLInputElement | HTMLSelectElement>
@@ -46,32 +46,37 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     getAllEvents();
   };
 
-  const validateForm = (): boolean => {
+  const validateForm = () => {
     const { name, cities, courses } = formData;
-    let errorsMsg = { name: "", cities: "", courses: "" };
+    let errors: FormErrorType = {
+      isNameError: false,
+      isCitiesError: false,
+      isCoursesError: false,
+    };
 
-    errorsMsg.name = isEmpty(name) ? emptyMsg() : "";
-    errorsMsg.cities = isEmpty(cities) ? emptyMsg() : "";
-    errorsMsg.courses = isEmpty(courses) ? emptyMsg() : "";
+    errors.isNameError = isEmpty(name);
+    errors.isCitiesError = isEmpty(cities);
+    errors.isCoursesError = isEmpty(courses);
 
-    setErrors(errorsMsg);
-
-    return Object.values(errorsMsg).some((error) => error !== "");
+    setFormErrors(errors);
   };
 
   const formHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const isError = validateForm();
+    validateForm();
 
-    console.log(isError);
+    if (formErrors === null) {
+      return;
+    }
 
-    setIsError(isError);
+    console.log(formErrors);
 
-    if (!isError && Object.keys(errors).length !== 0) {
+    if (!Object.values(formErrors).some((val) => val)) {
       createEntry();
       setFormData(defaultFormData);
       event.currentTarget.reset();
+      setFormErrors(null);
     }
   };
 
@@ -81,9 +86,8 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
   }, []);
 
   useEffect(() => {
-    if (isError) {
-      const isError = validateForm();
-      setIsError(isError);
+    if (formErrors !== null) {
+      validateForm();
     }
   }, [formData]);
 
@@ -98,7 +102,9 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
             id="name"
             onChange={inputChangeHandler}
           />
-          {isError && <div className={style.error}>{errors?.name}</div>}
+          {formErrors?.isNameError && (
+            <div className={style.error}>{emptyMsg()}</div>
+          )}
         </div>
         <div className={style.formGroup}>
           <label htmlFor="city">Miasto</label>
@@ -112,7 +118,9 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
               );
             })}
           </select>
-          {isError && <div className={style.error}>{errors?.cities}</div>}
+          {formErrors?.isCitiesError && (
+            <div className={style.error}>{emptyMsg()}</div>
+          )}
         </div>
         <div className={style.formGroup}>
           <label htmlFor="course">Kurs</label>
@@ -126,7 +134,9 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
               );
             })}
           </select>
-          {isError && <div className={style.error}>{errors?.courses}</div>}
+          {formErrors?.isCoursesError && (
+            <div className={style.error}>{emptyMsg()}</div>
+          )}
         </div>
         <div className={style.formGroup}>
           <button className={style.btn} type="submit">

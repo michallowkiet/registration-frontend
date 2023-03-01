@@ -8,7 +8,7 @@ export const Table = ({ events, deleteEvent }: TablePropsType) => {
 
   return (
     <div className={style.container}>
-      <h3>Zapisani uczestnicy szkoleń</h3>
+      <h3>Zapisani uczestnicy</h3>
       <table className={style.table}>
         <thead>
           <tr>

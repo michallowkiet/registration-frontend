@@ -8,8 +8,10 @@ interface MsgType {
   msg: string;
 }
 
+const baseURL = "https://registration-api-gce3.onrender.com/api/v1";
+
 const api = axios.create({
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL,
 });
 
 export const getRequest = async (
