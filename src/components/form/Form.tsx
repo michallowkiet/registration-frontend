@@ -47,7 +47,7 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     getAllEvents();
   };
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     const { name, cities, courses } = formData;
     let errors: FormErrorType = {
       isNameError: false,
@@ -60,18 +60,16 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     errors.isCoursesError = isEmpty(courses);
 
     setFormErrors(errors);
+
+    return !Object.values(errors).some((val) => val);
   };
 
   const formHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    validateForm();
+    const isFormValid = validateForm();
 
-    if (formErrors === null) {
-      return;
-    }
-
-    if (!Object.values(formErrors).some((val) => val)) {
+    if (isFormValid) {
       createEntry();
       setFormData(defaultFormData);
       event.currentTarget.reset();
@@ -87,14 +85,6 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
   useEffect(() => {
     if (formErrors !== null) {
       validateForm();
-    }
-
-    if (formErrors === null) {
-      setFormErrors({
-        isNameError: false,
-        isCitiesError: false,
-        isCoursesError: false,
-      });
     }
   }, [formData]);
 
