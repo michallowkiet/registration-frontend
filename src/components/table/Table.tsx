@@ -6,6 +6,14 @@ export const Table = ({ events, deleteEvent }: TablePropsType) => {
     deleteEvent(id);
   };
 
+  if (events.length === 0) {
+    return (
+      <div className={style.container}>
+        <span className={style.loader}></span>
+      </div>
+    );
+  }
+
   return (
     <div className={style.container}>
       <h3>Zapisani uczestnicy</h3>
