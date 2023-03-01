@@ -1,4 +1,5 @@
-import { TablePropsType } from "./types/TablePropsType";
+import { TablePropsType } from "../../types/TablePropsType";
+import style from "./Table.module.css";
 
 export const Table = ({ events, deleteEvent }: TablePropsType) => {
   const deleteHandler = (id: string) => {
@@ -6,9 +7,9 @@ export const Table = ({ events, deleteEvent }: TablePropsType) => {
   };
 
   return (
-    <div>
+    <div className={style.container}>
       <h3>Zapisani uczestnicy szkoleń</h3>
-      <table>
+      <table className={style.table}>
         <thead>
           <tr>
             <th>#</th>

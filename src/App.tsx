@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { deleteRequest, getRequest } from "./API";
 import "./App.css";
 import { Form } from "./components/form/Form";
-import { Table } from "./Table";
+import { Table } from "./components/table/Table";
 import { EventType } from "./types/eventType";
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
   return (
     <>
       {toggleMsg && (
-        <div>
+        <div className="msg">
           <h5>{msg}</h5>
           <button onClick={() => setToggleMsg(false)}>x</button>
         </div>

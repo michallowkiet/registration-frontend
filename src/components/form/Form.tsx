@@ -17,7 +17,7 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
   const [courses, setCourses] = useState<Array<CourseType>>([]);
   const [formData, setFormData] = useState<FormType>(defaultFormData);
   const [isError, setIsError] = useState<boolean>(false);
-  const [errors, setErrors] = useState<FormType>(defaultFormData);
+  const [errors, setErrors] = useState<FormType>({});
 
   const inputChangeHandler = (
     event: FormEvent<HTMLInputElement | HTMLSelectElement>
@@ -46,7 +46,7 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     getAllEvents();
   };
 
-  const validateForm = () => {
+  const validateForm = (): boolean => {
     const { name, cities, courses } = formData;
     let errorsMsg = { name: "", cities: "", courses: "" };
 
@@ -54,22 +54,21 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     errorsMsg.cities = isEmpty(cities) ? emptyMsg() : "";
     errorsMsg.courses = isEmpty(courses) ? emptyMsg() : "";
 
-    if (
-      errorsMsg.name.length > 0 ||
-      errorsMsg.cities.length > 0 ||
-      errorsMsg.courses.length > 0
-    ) {
-      setIsError(true);
-    } else {
-      setIsError(false);
-    }
+    setErrors(errorsMsg);
+
+    return Object.values(errorsMsg).some((error) => error !== "");
   };
 
   const formHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    validateForm();
 
-    if (!isError) {
+    const isError = validateForm();
+
+    console.log(isError);
+
+    setIsError(isError);
+
+    if (!isError && Object.keys(errors).length !== 0) {
       createEntry();
       setFormData(defaultFormData);
       event.currentTarget.reset();
@@ -81,9 +80,16 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
     getAllCourses();
   }, []);
 
+  useEffect(() => {
+    if (isError) {
+      const isError = validateForm();
+      setIsError(isError);
+    }
+  }, [formData]);
+
   return (
     <div className={style.login}>
-      <form onSubmit={formHandler}>
+      <form className={style.form} onSubmit={formHandler}>
         <div className={style.formGroup}>
           <label htmlFor="name">Imię i Nazwisko</label>
           <input
@@ -92,10 +98,11 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
             id="name"
             onChange={inputChangeHandler}
           />
+          {isError && <div className={style.error}>{errors?.name}</div>}
         </div>
         <div className={style.formGroup}>
           <label htmlFor="city">Miasto</label>
-          <select name="city" id="city" onChange={inputChangeHandler}>
+          <select name="cities" id="city" onChange={inputChangeHandler}>
             <option value=""> ---- </option>
             {cities.map((city, index) => {
               return (
@@ -105,10 +112,11 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
               );
             })}
           </select>
+          {isError && <div className={style.error}>{errors?.cities}</div>}
         </div>
         <div className={style.formGroup}>
           <label htmlFor="course">Kurs</label>
-          <select name="course" id="course" onChange={inputChangeHandler}>
+          <select name="courses" id="course" onChange={inputChangeHandler}>
             <option value=""> ---- </option>
             {courses.map((course, index) => {
               return (
@@ -118,10 +126,13 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
               );
             })}
           </select>
+          {isError && <div className={style.error}>{errors?.courses}</div>}
         </div>
-        <button className={style.btn} type="submit">
-          Zapisz
-        </button>
+        <div className={style.formGroup}>
+          <button className={style.btn} type="submit">
+            Zapisz
+          </button>
+        </div>
       </form>
     </div>
   );

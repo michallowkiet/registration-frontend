@@ -1,4 +1,7 @@
-export const isEmpty = (str: string): boolean => {
+export const isEmpty = (str: string | undefined): boolean => {
+  if (str === undefined) {
+    return true;
+  }
   return /^$/.test(str);
 };
 

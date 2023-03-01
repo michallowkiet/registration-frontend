@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+.msg {
+  max-width: 20%;
+  margin: 1rem auto;
+  display: flex;
+  align-items: baseline;
+
+  padding: 0.5rem 1rem;
+  background-color: #eee;
+
+  border-radius: 10px;
+}
+
+.msg button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  align-self: flex-start;
+  cursor: pointer;
+}
+
+.msg button:hover {
+  color: blue;
+}
