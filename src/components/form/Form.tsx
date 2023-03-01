@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FormEvent, useEffect, useState } from "react";
 import { getRequest, postRequest } from "../../API";
 import { CityType } from "../../types/cityType";
@@ -70,8 +71,6 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
       return;
     }
 
-    console.log(formErrors);
-
     if (!Object.values(formErrors).some((val) => val)) {
       createEntry();
       setFormData(defaultFormData);
@@ -88,6 +87,14 @@ export const Form = ({ getAllEvents }: { getAllEvents: () => void }) => {
   useEffect(() => {
     if (formErrors !== null) {
       validateForm();
+    }
+
+    if (formErrors === null) {
+      setFormErrors({
+        isNameError: false,
+        isCitiesError: false,
+        isCoursesError: false,
+      });
     }
   }, [formData]);
 
